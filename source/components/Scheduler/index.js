@@ -24,6 +24,15 @@ export default class Scheduler extends Component {
         tasksFilter: "",
     };
 
+
+    _getAllCompleted = (tasks) => {
+        if (tasks != undefined) {
+            return tasks.every((singleTask) => {
+                return singleTask.completed == true;
+            });
+        }
+    };
+
     _updateTask = (e) => {
         const { value: task } = e.target;
 
@@ -61,15 +70,12 @@ export default class Scheduler extends Component {
 
     };
 
-    _getAllCompleted = (tasks) => {
-        return tasks.every((singleTask) => {
-            return singleTask.completed == true;
-        });
-    };
+
 
     _completeAllTasksAsync = async () => {
 
         const { tasks, _setTasksFetchingState } = this.props;
+
 
         const undoneTasks = tasks.filter((singleTask) => {
             return singleTask.completed == false;
@@ -83,11 +89,12 @@ export default class Scheduler extends Component {
 
         const updatedTasks = await api.completeAllTasks(undoneTasks);
 
-        tasks.forEach((singleTask) => {
+        updatedTasks.forEach((singleTask) => {
             return singleTask.completed = true;
         });
 
         _setTasksFetchingState(tasks);
+
 
     };
 
@@ -99,9 +106,11 @@ export default class Scheduler extends Component {
 
     _filterTask = (tasks) => {
         const { tasksFilter } = this.state;
+
         return tasks.filter((singleTask) => {
             return singleTask.message.indexOf(tasksFilter) != -1;
         })
+
 
     };
 
@@ -125,33 +134,38 @@ export default class Scheduler extends Component {
 
     render () {
         const { task, tasksFilter } = this.state;
-        const { isSpinning, checked, tasks, _removeTaskAsync, _updateTaskAsync, } = this.props;
-        const checkedAll = this._getAllCompleted(tasks);
-        const filteredTasks = this._filterTask(tasks);
+        const { isSpinning, tasks, _removeTaskAsync, _updateTaskAsync, } = this.props;
 
 
+        const checkedAll = tasks ? this._getAllCompleted(tasks) : null;
+        const filteredTasks = tasks ? this._filterTask(tasks) : null;
 
-        const tasksToAdd = filteredTasks.map((taskItem, index) => (
+
+        const tasksToAdd = !filteredTasks ? null : filteredTasks.map((taskItem, index) => (
             <Transition
                 key = { taskItem.id }
                 appear
                 in
-                timeout = { 7000 }
+                timeout = { 700 }
                 onEnter  ={ this._animateSingleTaskEnter }
                 onExit  ={ this._animateSingleTaskExit }
             >
+
                 <Task
                       { ...taskItem }
                       _removeTaskAsync = { _removeTaskAsync }
                       _updateTaskAsync = { _updateTaskAsync }
                 />
+
             </Transition>
         ));
+
+
 
         return (
             <section className = { Styles.scheduler }>
                 <main>
-                    { isSpinning ? <Spinner isSpining = { isSpinning } /> : null }
+                    <Spinner isSpining = { isSpinning } />
                     <header>
                         <h1>Планировщик задач</h1>
                         <input
@@ -177,7 +191,9 @@ export default class Scheduler extends Component {
                         <div>
                             <ul>
                                 <div>
-                                    { tasksToAdd }
+                                    <TransitionGroup>
+                                        { tasks != undefined ? tasksToAdd : null  }
+                                    </TransitionGroup>
                                 </div>
                             </ul>
                         </div>

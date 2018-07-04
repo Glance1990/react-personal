@@ -63,6 +63,7 @@ export const api = {
 
         return updatedTask;
 
+
     },
 
     async removeTask(taskID) {
@@ -92,6 +93,8 @@ export const api = {
         }, error => {
             return error;
         });
+
+        
 
     }
 

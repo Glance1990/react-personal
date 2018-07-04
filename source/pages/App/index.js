@@ -115,7 +115,7 @@ export default class App extends Component {
     };
 
     render () {
-        const { isSpinning, tasks, checked } = this.state;
+        const { isSpinning, tasks } = this.state;
 
         return (
             <Scheduler
@@ -125,7 +125,6 @@ export default class App extends Component {
                 _setTasksFetchingState = { this._setTasksFetchingState }
                 isSpinning = { isSpinning }
                 tasks = { tasks }
-                checked = { checked }
             />
         );
     }

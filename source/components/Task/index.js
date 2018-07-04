@@ -13,10 +13,9 @@ import Remove from '../../theme/assets/Remove';
 export default class Task extends PureComponent {
     constructor(props) {
         super(props);
-        this.superDiv = React.createRef();
-        this.anotherRef = React.createRef();
     }
 
+    taskInput = React.createRef();
 
     _getTaskShape = ({
         id = this.props.id,
@@ -31,16 +30,13 @@ export default class Task extends PureComponent {
     });
 
     state = {
-        isTaskEditing: false,
+        isTaskEditing: true,
         newMessage: this.props.message,
     };
 
     _updateNewTaskMessage = () => {
-        //const { value: newMessage } = e.target;
 
-        //this.setState({ newMessage });
-
-        this.setState({ newMessage: this.superDiv.current.value })
+        this.setState({ newMessage: this.taskInput.current.value })
     };
 
     _removeTask = () => {
@@ -57,7 +53,7 @@ export default class Task extends PureComponent {
         const message = this.state.newMessage;
 
         _updateTaskAsync({id, message, completed, favorite});
-
+        console.log("one");
         this._setTaskEditingState(true);
 
     };
@@ -83,7 +79,7 @@ export default class Task extends PureComponent {
             this._setTaskEditingState(true);
         }
 
-        this.anotherRef.current.focus();
+        this.taskInput.current.focus();
 
     };
 
@@ -110,19 +106,13 @@ export default class Task extends PureComponent {
         }
     };
 
-    moveCaretAtEnd = (e) => {
-        this.setState(() => {
-            return { isTaskEditing: false };
-        });
-    };
-
 
     render () {
-        const {id, completed, favorite, message, _removeTaskAsync} = this.props;
+        const { completed, favorite } = this.props;
         const { isTaskEditing } = this.state;
         const classes = `${Styles.task} ${completed ? Styles.completed : null}`;
 
-        return <li className = { classes }  ref={ this.anotherRef }>
+        return <li className = { classes }>
             <div className = { Styles.content }>
                 <Checkbox
                     className = { Styles.toggleTaskCompletedState }
@@ -137,10 +127,9 @@ export default class Task extends PureComponent {
                     autoFocus={true}
                     value={ this.state.newMessage }
                     onChange = { this._updateNewTaskMessage }
-                    disabled={!isTaskEditing}
-                    ref={ this.superDiv }
+                    disabled={isTaskEditing}
+                    ref={ this.taskInput }
                     onKeyDown= { this._updateTaskMessageOnKeyDown }
-                    //onFocus={this.moveCaretAtEnd}
                 />
             </div>
             <div className = { Styles.actions }>
